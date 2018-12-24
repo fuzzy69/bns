@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "macros.html" import flash_messages %}
+{% block content_header %}
+<h1>Proxies</h1>
+{% endblock %}
+{% block content_body %}
+<div class="box">
+    <div class="box-header">
+        {{ flash_messages() }}
+    </div>
+<div class="box-body table-responsive">
+  <form action="" method="post">
+    <div class="form-group">
+      <label for="proxies">Proxies List:</label>
+      <textarea class="form-control" rows="30" name="proxies" id="proxies" placeholder="Paste proxies here, one proxy per line in format http://HOST:PORT/">{{ proxies }}</textarea>
+    </div>
+    <button type="button" class="btn btn-default pull-left" id="button-clear">Clear</button>
+    <button type="submit" class="btn btn-primary pull-right" id="button-save">Save</button>
+  </form>
+</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#button-clear").click(function() {
+    $("#proxies").val('');
+  });
+});
+</script>
+{% endblock %}

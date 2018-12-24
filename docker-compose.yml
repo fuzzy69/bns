@@ -1,0 +1,233 @@
+version: '2'
+
+services:
+
+#   webui:
+#     build: .
+#     ports:
+#      - "5000:5000"
+#     volumes:
+#      - .:/bns
+#     # depends_on:
+#       # - rabbit
+#     entrypoint: python
+#     # command: app.py
+#     command: webui.py
+#     env_file:
+#       - ./config/default.env
+#     # environment:
+#     #   - WEBUI_HOST=0.0.0.0
+#     #   - WEBUI_PORT=5000
+#     #   - RABBIT_HOST=rabbit
+#     #   - RABBIT_PORT=5672
+#     #   - RABBIT_USER=bns
+#     #   - RABBIT_PASS=bns
+#     #   - REDIS_HOST=redis
+#     #   - REDIS_PORT=6379
+#     # command: ./run_test
+#     # depends_on:
+#       # - redis
+#       # - rabbit
+
+#   redis:
+#     image: "redis:alpine"
+#     ports:
+#       - "6379:6379"
+
+#   rabbit:
+#     image: "rabbitmq:alpine"
+#     ports:
+#       - "5672:5672"
+#       - "15672:15672"
+#     env_file:
+#       - ./config/default.env
+#     # environment:
+#     #   - RABBITMQ_DEFAULT_USER=bns
+#     #   - RABBITMQ_DEFAULT_PASS=bns
+
+# # MongoDB replica set
+#   mongo:
+#     # build:
+#       # context: .
+#       # dockerfile: Dockerfile-mongo
+#     image: mongo
+#     # hostname: mongo
+#     # entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--dbpath", "/data/db", "--smallfiles" ]
+#     # entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--dbpath", "/data/db", "--smallfiles", "--bind_ip", "127.0.0.1" ]
+#     command: ["mongod", "--config", "/etc/mongod.conf"]
+#     env_file:
+#       - ./config/default.env
+#     # environment:
+#       # - MONGO_INITDB_ROOT_USERNAME=admin
+#       # - MONGO_INITDB_ROOT_PASSWORD=test123
+#     # entrypoint: [ "bash", "/scripts/run_mongo.sh" ]
+#     ports:
+#       - "27017:27017"
+#     volumes:
+#       - ./data/mongo:/data/db
+#       # - ./config/mongod.conf:/etc/mongod.conf
+#       # - ./config/mongo.keyfile:/etc/mongo.keyfile
+#       # - ./scripts:/scripts
+#       # - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+#     # links:
+#       # - mongo2:mongo2
+#       # - mongo3:mongo3
+#     restart: always
+
+#   # mongo2:
+#   #   image: mongo
+#   #   # hostname: mongo2
+#   #   # entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--dbpath", "/data/db", "--smallfiles" ]
+#   #   command: ["mongod", "--config", "/etc/mongod.conf"]
+#   #   # entrypoint: [ "bash", "/scripts/run_mongo.sh" ]
+#   #   env_file:
+#   #     - ./config/default.env
+#   #   ports:
+#   #     - "27018:27017"
+#   #   volumes:
+#   #     - ./data/mongo2:/data/db
+#   #     - ./config/mongod.conf:/etc/mongod.conf
+#   #     - ./config/mongo.keyfile:/etc/mongo.keyfile
+#   #     # - ./scripts:/scripts
+#   #     - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+#   #   restart: always
+
+#   # mongo3:
+#   #   image: mongo
+#   #   # hostname: mongo3
+#   #   # entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--dbpath", "/data/db", "--smallfiles" ]
+#   #   command: ["mongod", "--config", "/etc/mongod.conf"]
+#   #   # entrypoint: [ "bash", "/scripts/run_mongo.sh" ]
+#   #   env_file:
+#   #     - ./config/default.env
+#   #   ports:
+#   #     - "27019:27017"
+#   #   volumes:
+#   #     - ./data/mongo3:/data/db
+#   #     - ./config/mongod.conf:/etc/mongod.conf
+#   #     - ./config/mongo.keyfile:/etc/mongo.keyfile
+#   #     # - ./scripts:/scripts
+#   #     - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+#   #   restart: always
+
+#   # mongosetup:
+#   #   image: mongo
+#   #   volumes:
+#   #     - ./scripts:/scripts
+#   #   # restart: always
+#   #   entrypoint: [ "bash", "/scripts/mongosetup.sh" ]
+
+#   celery:
+#     build: .
+#       # context: .
+#     command: ./run_celery
+#     env_file:
+#       - ./config/default.env
+#     # user: nobody
+#     # restart: always
+#     volumes:
+#       - .:/bns
+#     # environment:
+#     #   - RABBIT_HOST=rabbit
+#     #   - RABBIT_PORT=5672
+#     #   - RABBIT_USER=bns
+#     #   - RABBIT_PASS=bns
+#     #   - REDIS_HOST=redis
+#     #   - REDIS_PORT=6379
+#     links:
+#       - rabbit
+#       - redis
+#     depends_on:
+#       - rabbit
+
+  webui:
+    build: .
+    ports:
+     - "5000:5000"
+    volumes:
+     - .:/bns
+    entrypoint: python
+    command: webui.py
+    env_file:
+      - ./config/default.env
+    depends_on:
+      - redis
+      - rabbit
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    restart: always
+
+  rabbit:
+    image: "rabbitmq:alpine"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - ./config/default.env
+    restart: always
+
+  mongo:
+    image: mongo
+    command: ["mongod", "--config", "/etc/mongod.conf"]
+    env_file:
+      - ./config/default.env
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongo:/data/db
+      - ./config/mongod.conf:/etc/mongod.conf
+      # - ./config/mongo.keyfile:/etc/mongo.keyfile
+      # - ./scripts:/scripts
+      # - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+    # links:
+    #   - mongo2
+    #   - mongo3
+    restart: always
+
+  # mongo2:
+  #   image: mongo
+  #   command: ["mongod", "--config", "/etc/mongod.conf"]
+  #   env_file:
+  #     - ./config/default.env
+  #   ports:
+  #     - "27018:27017"
+  #   volumes:
+  #     - ./data/mongo2:/data/db
+  #     - ./config/mongod.conf:/etc/mongod.conf
+  #     - ./config/mongo.keyfile:/etc/mongo.keyfile
+  #     # - ./scripts:/scripts
+  #     # - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+  #   restart: always
+
+  # mongo3:
+  #   image: mongo
+  #   command: ["mongod", "--config", "/etc/mongod.conf"]
+  #   env_file:
+  #     - ./config/default.env
+  #   ports:
+  #     - "27019:27017"
+  #   volumes:
+  #     - ./data/mongo3:/data/db
+  #     - ./config/mongod.conf:/etc/mongod.conf
+  #     - ./config/mongo.keyfile:/etc/mongo.keyfile
+  #     # - ./scripts:/scripts
+  #     # - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+  #   restart: always
+
+  celery:
+    build: .
+    command: ./run_celery
+    env_file:
+      - ./config/default.env
+    # user: nobody
+    volumes:
+      - .:/bns
+    links:
+      - rabbit
+      - redis
+    depends_on:
+      - rabbit
+    restart: always

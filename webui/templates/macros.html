@@ -1,0 +1,29 @@
+{% macro flash_messages() %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endmacro %}
+
+{% macro render_pagination(pagination, endpoint) %}
+<div class="text-center" style="clear: both;">
+    <nav>
+        <ul class="pagination">
+        {%- for page in pagination.iter_pages() %}
+            {% if page %}
+            {% if page != pagination.page %}
+            <li><a href="{{ url_for(endpoint, page=page) }}">{{ page }}</a></li>
+            {% else %}
+            <li class="active"><span>{{ page }}</span></li>
+            {% endif %}
+            {% else %}
+            <li class="disabled"><span>...</span></li>
+            {% endif %}
+        {%- endfor %}
+        </ul>
+    </nav>
+</div>
+{% endmacro %}

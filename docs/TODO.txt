@@ -1,0 +1,9 @@
+- Find best approach for running the spiders at large scale
+- Find MongoDB scaling solution
+- Finish MongoDB keyfile auth
+- Fix Twitter spider
+- Fix Twitter spider geo data extraction
+- Fix Twitter spider search for larger lists of users/keywords
+- Fix Twitter request delay
+- Fix periodic jobs not working after container restart
+- Add Reddit spider

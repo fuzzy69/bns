@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% from "macros.html" import flash_messages, render_pagination %}
+{% block content_header %}
+<h1>Completed Jobs</h1>
+{% endblock %}
+{% block content_body %}
+<div class="box">
+    <div class="box-header">
+        <!-- <h3 class="box-title">Completed Jobs</h3> -->
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">#</th>
+                <th>Spider</th>
+                <th width="5%">Scrape Type</th>
+                <th width="5%">Use Proxies</th>
+                <th width="5%">JSON</th>
+                <th width="5%">MongoDB</th>
+                <th width="5%">Images</th>
+                <th width="10%">Runtime</th>
+                <th width="10%">Started</th>
+                <th width="10%">Log</th>
+                <th width="10%">Feed Results</th>
+                <th width="10%">Articles Scraped</th>
+                <th width="10%">Status</th>
+            </tr>
+            {% for job in pagination.items %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>{{ job.spider_name }}</td>
+                <td>
+                    {% if job.scrape_type == 0 %}<span class="label label-success">ALL</span>{% endif %}
+                    {% if job.scrape_type == 1 %}<span class="label label-info">NEW</span>{% endif %}
+                    {% if job.scrape_type == 2 %}<span class="label label-warning">UNSCRAPED</span>{% endif %}
+                </td>
+                <td>
+                    {% if job.use_proxies == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.file == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.db == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.images == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>{{ timedelta(job.date_finished, job.date_started) }}</td>
+                <td>{{ str_date(job.date_started) }}</td>
+                <td>
+                    <a href="/jobs/{{ job.id }}/log" target="_blank">Log</a>
+                </td>
+                <td>
+                    <a href="/spiders/{{ job.id }}/feed" target="_blank">JSON</a>
+                </td>
+                <td>
+                    {{ job.items_scraped }}
+                </td>
+                <td>
+                    {% if job.spider_status == 2 %}<span class="label label-success">FINISHED</span>{% endif %}
+                    {% if job.spider_status == 3 %}<span class="label label-danger">CANCELED</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {{ render_pagination(pagination, "jobs_completed") }}
+    </div>
+</div>
+{% endblock %}

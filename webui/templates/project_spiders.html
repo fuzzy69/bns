@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+{% from "macros.html" import flash_messages %}
+{% block content_header %}
+<h1>Spiders</h1>
+<!-- <ol style="float: right;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    padding: 7px 5px;
+    position: absolute;
+    top: 15px;
+    right: 10px;">
+    <a type="button" class="btn btn-info btn-flat" style="margin-top: -10px;" data-toggle="modal" href="/format-feed">Format JSON Feeds</a>
+</ol> -->
+<ol style="float: right;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    padding: 7px 5px;
+    position: absolute;
+    top: 15px;
+    right: 10px;">
+    <button type="button" class="btn btn-success btn-flat" style="margin-top: -10px;" data-toggle="modal"
+            data-target="#job-run-modal2" id="button-run-once">Run
+    </button>
+</ol>
+{% endblock %}
+{% block content_body %}
+<div class="box">
+    <div class="box-header">
+        {{ flash_messages() }}
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th style="width: 10%">#</th>
+                <th style="width: 50%"><input type="checkbox" name="check_all" id="check_all" /> Spider</th>
+                <th>Target Website</th>
+                <!-- <th>Feed Results</th> -->
+            </tr>
+            {% for id, name, url in spiders %}
+            <tr>
+                <td>
+                  <a name="[[ job_instance.job_instance_id ]]">{{ id + 1 }}</a>
+                </td>
+                <td>
+                  <input type="checkbox" name="spider-{{ id }}" id="spider-{{ id }}" class="spider" data-id="{{ id }}" data-name="{{ name }}" />
+                  <label for="spider-{{ id }}">{{ name }}</label>
+                </td>
+                <td>
+                    <a href="{{ url }}" target="_blank">{{ url }}</a>
+                </td>
+<!--                 <td>
+                    <a href="/project/[[ project.id ]]/job/[[ job_instance.job_instance_id ]]/run"><span
+                            class="label label-info">Run</span></a>
+                    <a href="/project/[[ project.id ]]/job/[[ job_instance.job_instance_id ]]/remove"><span
+                            class="label label-danger">Remove</span></a>
+                </td>
+ -->
+<!--                 <td>
+                    <a href="/spiders/{{ name }}/feed" target="_blank">JSON</a>
+                </td> -->
+             </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" id="job-run-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/project/ project.id /job/add" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Add Periodic Job</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Spider</label>
+                                <select class="form-control" name="spider_name">
+                                    {% for spider in spider_list %}
+                                    <option value="[[ spider.spider_name ]]">[[ spider.spider_name ]]</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority</label>
+                                <select class="form-control" name="priority">
+                                    <option label="Low" value="-1">Low</option>
+                                    <option label="Normal" value="0" selected="selected">Normal</option>
+                                    <option label="High" value="1">High</option>
+                                    <option label="Highest" value="2">Highest</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Args</label>
+                                <input type="text" name="spider_arguments" class="form-control"
+                                       placeholder="foo=1,bar=2">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Choose Month</label>
+                                <select class="form-control" name="cron_month">
+                                    <option value="*" selected="selected">Every Month</option>
+                                    {% for i in range(1,13) %}
+                                    <option value="[[ i ]]">[[ i ]]</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Choose Day of Week</label>
+                                <select class="form-control" name="cron_day_of_week">
+                                    <option value="*" selected="selected">Every day</option>
+                                    <option value="0">Monday</option>
+                                    <option value="1">Tuesday</option>
+                                    <option value="2">Wednesday</option>
+                                    <option value="3">Thursday</option>
+                                    <option value="4">Friday</option>
+                                    <option value="5">Saturday</option>
+                                    <option value="6">Sunday</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Choose Day of Month</label>
+                                <select class="form-control" name="cron_day_of_month">
+                                    <option value="*" selected="selected">Every day</option>
+                                    {% for i in range(1,32) %}
+                                    <option value="[[ i ]]">[[ i ]]</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Choose Hour</label>
+                                <select class="form-control" name="cron_hour">
+                                    <option value="*" selected="selected">Every Hour</option>
+                                    {% for i in range(0,24) %}
+                                    <option value="[[ i ]]">[[ i ]]</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Choose Minutes</label>
+                                <select class="form-control" name="cron_minutes">
+                                    <option value="0" selected="selected">0</option>
+                                    {% for i in range(5,61,5) %}
+                                    <option value="[[ i ]]">[[ i ]]</option>
+                                    {% endfor %}
+                                    <option value="*">Every minute</option>
+                                    <option value="*/2">Every 2 minute</option>
+                                    <option value="*/3">Every 3 minute</option>
+                                    <option value="*/4">Every 4 minute</option>
+                                    <option value="*/5">Every 5 minute</option>
+                                    <option value="*/10">Every 10 minute</option>
+                                    <option value="*/15">Every 15 minute</option>
+                                    <option value="*/30">Every 30 minute</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <h4>Advanced Options</h4>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Chose Daemon</label>
+                                <select class="form-control" name="daemon">
+                                    <option value="auto">auto</option>
+                                    {% for server in servers %}
+                                    <option value="[[ server ]]">[[ server ]]</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Cron Expressions (m h dom mon dow)</label>
+                                <input type="text" name="cron_exp" class="form-control"
+                                       placeholder="0 * * * * ">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="run_type" value="periodic">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" role="dialog" id="job-run-modal2">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/job/add" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Run Spider Once</h4>
+                </div>
+                <div class="modal-body">
+
+                    <ul class="nav nav-tabs" style="">
+                        <li class="active"><a data-toggle="tab" href="#home">Articles</a></li>
+                        <li><a data-toggle="tab" href="#menu1">Keywords</a></li>
+                        <li><a data-toggle="tab" href="#menu2">Twitter</a></li>
+                    </ul>
+
+                    <div class="tab-content" style="margin-top: 10px;">
+                        <div id="home" class="tab-pane fade in active">
+                            <div class="form-group">
+                              <label>Selected Spiders:</label>
+                              <select class="form-control" name="selected_spiders" id="selected_spiders" multiple disabled>
+                              </select>
+                              <input type="hidden" name="_selected_spiders" id="_selected_spiders" value="" />
+                            </div>
+                            <div class="form-group">
+                                <label>Scrape type:</label><br />
+                                <label class="radio-inline"><input type="radio" name="scrape_type" value="0" {% if settings.scrape_type == 0 %}checked{% endif%} />Scrape all articles</label>
+                                <label class="radio-inline"><input type="radio" name="scrape_type" value="1" {% if settings.scrape_type == 1 %}checked{% endif%} />Scrape new articles</label>
+                                <label class="radio-inline"><input type="radio" name="scrape_type" value="2" {% if settings.scrape_type == 2 %}checked{% endif%} />Scrape previously unscraped articles</label>
+                            </div>
+                            <div class="form-group">
+                                <label>Results:</label><br />
+                                <label class="checkbox-inline"><input type="checkbox" name="feed" {% if settings.feed == 1 %}checked{% endif%} />Save results to JSON file</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="db" {% if settings.db == 1 %}checked{% endif%} />Save results to MongoDB</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="images" {% if settings.images == 1 %}checked{% endif%} />Save images</label>
+                            </div>
+                            <div class="form-group">
+                                <label>Proxies:</label><br />
+                                <label class="checkbox-inline"><input type="checkbox" name="use_proxies" {% if settings.use_proxies == 1 %}checked{% endif%} />Use Proxies</label>
+                            </div>
+                            {% if debug %}
+                            <div class="form-group">
+                                <label>Test:</label><br />
+                                <label class="checkbox-inline"><input type="checkbox" name="test" />Test</label>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div id="menu1" class="tab-pane fade">
+                            <div class="form-group">
+                                <label for="twitter_keywords">Google Trends/Twitter Keywords:</label>
+                                <textarea class="form-control" rows="5" name="twitter_keywords" id="twitter_keywords" placeholder="Paste keywords here, one keyword per line">{{ twitter_keywords }}</textarea>
+                                <button type="button" class="btn btn-default pull-left" id="button-clear-twitter-keywords">Clear</button><br />
+                            </div>
+                        </div>
+                        <div id="menu2" class="tab-pane fade">
+                            <div class="form-group">
+                                <label for="twitter_usernames">Usernames:</label>
+                                <textarea class="form-control" rows="5" name="twitter_usernames" id="twitter_usernames" placeholder="Paste usernames here, one username per line">{{ twitter_usernames }}</textarea>
+                                <button type="button" class="btn btn-default pull-left" id="button-clear-twitter-usernames">Clear</button><br />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Start</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function() {
+    // Check All
+    $("#check_all").change(function() {
+      if (this.checked) {
+        $(".spider").each(function() {
+          $(this).prop("checked", true);
+        });
+      } else {
+        $(".spider").each(function() {
+          $(this).prop("checked", false);
+        });
+      };
+    });
+
+  $("#button-run-once").click(function() {
+    // Selected Spiders
+    $("#selected_spiders").empty();
+    var _selected_spiders = [];
+    $(".spider").each(function() {
+      if (this.checked) {
+        $("#selected_spiders").append($("<option>", {
+          value: $(this).attr("data-id"),
+          text : $(this).attr("data-name")
+        }));
+        _selected_spiders.push($(this).attr("data-id"));
+      };
+    });
+    $("#_selected_spiders").val(_selected_spiders.join(','));
+  });
+
+  $("#button-clear-twitter-usernames").click(function() {
+    $("#twitter_usernames").val('');
+  });
+  $("#button-clear-twitter-keywords").click(function() {
+    $("#twitter_keywords").val('');
+  });
+
+});
+</script>
+{% endblock %}

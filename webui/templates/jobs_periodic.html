@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% from "macros.html" import flash_messages %}
+{% block content_header %}
+<h1>Periodic Jobs</h1>
+<ol style="float: right;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    padding: 7px 5px;
+    position: absolute;
+    top: 15px;
+    right: 10px;">
+    <button type="button" class="btn btn-success btn-flat" style="margin-top: -10px;" data-toggle="modal"
+            data-target="#job-run-modal2" id="button-add-periodic-job">Add Periodic Job
+    </button>
+</ol>
+{% endblock %}
+{% block content_body %}
+<div class="box">
+    <div class="box-header">
+        {{ flash_messages() }}
+    </div>
+
+    <div class="box-header">
+        <h3 class="box-title">Disabled Jobs</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">#</th>
+                <th><input type="checkbox" name="check-all-disabled" id="check-all-disabled" /> Spider</th>
+                <th width="5%">Scrape Type</th>
+                <th width="5%">Use Proxies</th>
+                <th width="5%">JSON</th>
+                <th width="5%">MongoDB</th>
+                <th width="5%">Images</th>
+                <!-- <th width="10%">Started</th> -->
+                <th width="10%">Repeat On</th>
+                <th width="10%">Action</th>
+            </tr>
+            {% for job in disabled_jobs %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>
+                    <input type="checkbox" name="spider-{{ job.id }}" id="spider-{{ job.id }}" class="spider-disabled" data-id="{{ job.id }}" data-name="{{ job.spider_name }}" />
+                    <label for="spider-{{ job.id }}">{{ job.spider_name }}</label>
+                </td>
+                <td>
+                    {% if job.scrape_type == 0 %}<span class="label label-success">ALL</span>{% endif %}
+                    {% if job.scrape_type == 1 %}<span class="label label-info">NEW</span>{% endif %}
+                    {% if job.scrape_type == 2 %}<span class="label label-warning">UNSCRAPED</span>{% endif %}
+                </td>
+                <td>
+                    {% if job.use_proxies == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.file == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.db == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.images == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <!-- <td> job.date_started </td> -->
+                <td>{% if job.repeat_time > 0 %}{{ job.repeat_time}} minute(s){% endif %}</td>
+                <td>
+                    {% if job.repeat_time > 0 %}<a href="/periodic-jobs/{{ job.id }}/start"><span class="label label-success">Start</span></a>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="box-header">
+        <h3 class="box-title">Enabled Jobs</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">#</th>
+                <!-- <th><input type="checkbox" name="check-all-enabled" id="check-all-enabled" /> Spider</th> -->
+                <th>Spider</th>
+                <th width="5%">Scrape Type</th>
+                <th width="5%">Use Proxies</th>
+                <th width="5%">JSON</th>
+                <th width="5%">MongoDB</th>
+                <th width="5%">Images</th>
+                <!-- <th width="10%">Started</th> -->
+                <th width="10%">Repeat On</th>
+                <th width="10%">Action</th>
+            </tr>
+            {% for job in enabled_jobs %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>
+                    <!-- <input type="checkbox" name="spider-{{ job.id }}" id="spider-{{ job.id }}" class="spider-enabled" data-id="{{ job.id }}" data-name="{{ job.spider_name }}" /> -->
+                    <!-- <label for="spider-{{ job.id }}">{{ job.spider_name }}</label> -->
+                    {{ job.spider_name }}
+                </td>
+                <td>
+                    {% if job.scrape_type == 0 %}<span class="label label-success">ALL</span>{% endif %}
+                    {% if job.scrape_type == 1 %}<span class="label label-info">NEW</span>{% endif %}
+                    {% if job.scrape_type == 2 %}<span class="label label-warning">UNSCRAPED</span>{% endif %}
+                </td>
+                <td>
+                    {% if job.use_proxies == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.file == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.db == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if job.images == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <!-- <td> job.date_started </td> -->
+                <td>{{ job.repeat_time }} minute(s)</td>
+                <td>
+                    <a href="/periodic-jobs/{{ job.id }}/stop"><span class="label label-danger">Stop</span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" id="job-run-modal2">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/periodic-jobs/add" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Add Periodic Job</h4>
+                </div>
+                <div class="modal-body">
+
+                    <ul class="nav nav-tabs" style="">
+                        <li class="active"><a data-toggle="tab" href="#home">Articles</a></li>
+                        <li><a data-toggle="tab" href="#menu1">Keywords</a></li>
+                        <li><a data-toggle="tab" href="#menu2">Twitter</a></li>
+                    </ul>
+
+                    <div class="tab-content" style="margin-top: 10px;">
+                        <div id="home" class="tab-pane fade in active">
+                            <div class="form-group">
+                              <label>Selected Spiders:</label>
+                              <select class="form-control" name="selected_spiders" id="selected_spiders" multiple disabled>
+                              </select>
+                              <input type="hidden" name="_selected_spiders" id="_selected_spiders" value="" />
+                            </div>
+                            <div class="form-group">
+                                <label>Scrape type:</label><br />
+                                <label class="radio-inline"><input type="radio" name="scrape_type" value="0" {% if settings.scrape_type == 0 %}checked{% endif%} />Scrape all articles</label>
+                                <label class="radio-inline"><input type="radio" name="scrape_type" value="1" {% if settings.scrape_type == 1 %}checked{% endif%} />Scrape new articles</label>
+                                <label class="radio-inline"><input type="radio" name="scrape_type" value="2" {% if settings.scrape_type == 2 %}checked{% endif%} />Scrape previously unscraped articles</label>
+                            </div>
+                            <div class="form-group">
+                                <label>Results:</label><br />
+                                <label class="checkbox-inline"><input type="checkbox" name="feed" {% if settings.feed == 1 %}checked{% endif%} />Save results to JSON file</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="db" {% if settings.db == 1 %}checked{% endif%} />Save results to MongoDB</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="images" {% if settings.images == 1 %}checked{% endif%} />Save images</label>
+                            </div>
+                            <div class="form-group">
+                                <label>Proxies:</label><br />
+                                <label class="checkbox-inline"><input type="checkbox" name="use_proxies" {% if settings.use_proxies == 1 %}checked{% endif%} />Use Proxies</label>
+                            </div>
+                        </div>
+                        <div id="menu1" class="tab-pane fade">
+                            <div class="form-group">
+                                <label for="twitter_keywords">Google Trends/Twitter Keywords:</label>
+                                <textarea class="form-control" rows="5" name="twitter_keywords" id="twitter_keywords" placeholder="Paste keywords here, one keyword per line">{{ twitter_keywords }}</textarea>
+                                <button type="button" class="btn btn-default pull-left" id="button-clear-twitter-keywords">Clear</button><br />
+                            </div>
+                        </div>
+                        <div id="menu2" class="tab-pane fade">
+                            <div class="form-group">
+                                <label for="twitter_usernames">Usernames:</label>
+                                <textarea class="form-control" rows="5" name="twitter_usernames" id="twitter_usernames" placeholder="Paste usernames here, one username per line">{{ twitter_usernames }}</textarea>
+                                <button type="button" class="btn btn-default pull-left" id="button-clear-twitter-usernames">Clear</button><br />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Repeat job every</h4>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Choose Minutes</label>
+                                    <select class="form-control" name="cron_minutes">
+                                        <option value="0" selected="selected">0</option>
+                                        <option value="1">Every minute</option>
+                                        {% for i in range(2, 60) %}
+                                        <option value="{{ i }}">Every {{ i }} minute(s)</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Choose Hour</label>
+                                    <select class="form-control" name="cron_hour">
+                                        <option value="0" selected="selected">0</option>
+                                        {% for i in range(1, 24) %}
+                                        <option value="{{ i }}">Every {{ i }} hour(s)</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="run_type" value="0" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Start</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function() {
+    // Check All
+    $("#check-all-disabled").change(function() {
+      if (this.checked) {
+        $(".spider-disabled").each(function() {
+          $(this).prop("checked", true);
+        });
+      } else {
+        $(".spider-disabled").each(function() {
+          $(this).prop("checked", false);
+        });
+      };
+    });
+
+    $("#check-all-enabled").change(function() {
+      if (this.checked) {
+        $(".spider-enabled").each(function() {
+          $(this).prop("checked", true);
+        });
+      } else {
+        $(".spider-enabled").each(function() {
+          $(this).prop("checked", false);
+        });
+      };
+    });
+
+  $("#button-add-periodic-job").click(function() {
+    // Selected Spiders
+    $("#selected_spiders").empty();
+    var _selected_spiders = [];
+    $(".spider-disabled").each(function() {
+      if (this.checked) {
+        $("#selected_spiders").append($("<option>", {
+          value: $(this).attr("data-id"),
+          text : $(this).attr("data-name")
+        }));
+        _selected_spiders.push($(this).attr("data-id"));
+      };
+    });
+    $("#_selected_spiders").val(_selected_spiders.join(','));
+  });
+
+  $("#button-clear-twitter-usernames").click(function() {
+    $("#twitter_usernames").val('');
+  });
+  $("#button-clear-twitter-keywords").click(function() {
+    $("#twitter_keywords").val('');
+  });
+
+});
+</script>
+{% endblock %}

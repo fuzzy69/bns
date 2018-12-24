@@ -1,0 +1,4 @@
+FROM mongo:latest
+
+RUN ls
+#RUN mongo admin --eval "db.createUser({user: 'bns', pwd: 'bns', roles:[{ role: 'root', db: 'admin' }]});"

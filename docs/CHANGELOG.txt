@@ -1,0 +1,14 @@
+2018-08-31
+- Fixed XPATH expressions for article/pagination matching
+- Refactored spider's parse method
+- Cleaned up/improved spider code
+- Added doctrings for several classes/methods
+
+2018-04-25
+- Abandon one JSON feed file per spider approach and save separate JSON feed file for each spider scrape job
+- Display scraped articles count for each scrape job
+
+2018-05-13
+- Added MongoDB replica set
+- Added coinmarketcap spider
+- Added twitter spider

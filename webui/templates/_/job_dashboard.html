@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% from "macros.html" import flash_messages %}
+{% block content_header %}
+<h1>Job Dashboard</h1>
+{% endblock %}
+{% block content_body %}
+<!--======next job======-->
+<div class="box">
+    <div class="box-header">
+        {{ flash_messages() }}
+    </div>
+    <div class="box-header">
+        <h3 class="box-title">Next Jobs</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">#</th>
+                <th>Spider</th>
+                <th width="10%">Scrape Type</th>
+                <th width="10%">Use Proxies</th>
+                <th width="10%">Action</th>
+            </tr>
+            {% for job in next_jobs %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>{{ job.spider_name }}</td>
+                <td>
+                    {% if job.scrape_type == 0 %}<span class="label label-success">ALL</span>{% endif %}
+                    {% if job.scrape_type == 1 %}<span class="label label-info">NEW</span>{% endif %}
+                    {% if job.scrape_type == 2 %}<span class="label label-warning">UNSCRAPED</span>{% endif %}
+                </td>
+                <td>
+                    {% if job.use_proxies == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/jobs/{{ job.id }}/stop"><span class="label label-danger">Cancel</span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<!--======running job======-->
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Running Jobs</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">#</th>
+                <th>Spider</th>
+                <th width="10%">Scrape Type</th>
+                <th width="10%">Use Proxies</th>
+                <th width="10%">Runtime</th>
+                <th width="10%">Started</th>
+                <th width="10%">Log</th>
+                <th width="10%">Action</th>
+            </tr>
+            {% for job in running_jobs %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>{{ job.spider_name }}</td>
+                <td>
+                    {% if job.scrape_type == 0 %}<span class="label label-success">ALL</span>{% endif %}
+                    {% if job.scrape_type == 1 %}<span class="label label-info">NEW</span>{% endif %}
+                    {% if job.scrape_type == 2 %}<span class="label label-warning">UNSCRAPED</span>{% endif %}
+                </td>
+                <td>
+                    {% if job.use_proxies == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>{{ timedelta(now, job.date_started) }}</td>
+                <td>{{ job.date_created }}</td>
+                <td>
+                    <a href="/job/{{ job.id }}/log" target="_blank">Log</a>
+                </td>
+                <td>
+                    <a href="/jobs/{{ job.id }}/stop"><span class="label label-danger">Stop</span></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<!--======completed job======-->
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Completed Jobs</h3>
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th width="5%">#</th>
+                <th>Spider</th>
+                <th width="10%">Scrape Type</th>
+                <th width="10%">Use Proxies</th>
+                <th width="10%">Runtime</th>
+                <th width="10%">Started</th>
+                <th width="10%">Log</th>
+                <th width="10%">Status</th>
+            </tr>
+            {% for job in completed_jobs %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>{{ job.spider_name }}</td>
+                <td>
+                    {% if job.scrape_type == 0 %}<span class="label label-success">ALL</span>{% endif %}
+                    {% if job.scrape_type == 1 %}<span class="label label-info">NEW</span>{% endif %}
+                    {% if job.scrape_type == 2 %}<span class="label label-warning">UNSCRAPED</span>{% endif %}
+                </td>
+                <td>
+                    {% if job.use_proxies == 1 %}
+                    <span class="label label-info">YES</span>
+                    {% else %}
+                    <span class="label label-default">NO</span>
+                    {% endif %}
+                </td>
+                <td>{{ timedelta(job.date_finished, job.date_started) }}</td>
+                <td>{{ job.date_created }}</td>
+                <td>
+                    <a href="/job/{{ job.id }}/log" target="_blank">Log</a>
+                </td>
+                <td>
+                    {% if job.spider_status == 2 %}
+                    <span class="label label-success">FINISHED</span>
+                    {% else %}
+                    <span class="label label-danger">CANCELED</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function() {
+    setInterval(function() {
+      window.location.reload();
+    }, 5000);
+});
+</script>
+{% endblock %}

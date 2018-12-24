@@ -1,0 +1,12 @@
+flask
+flask_sqlalchemy
+mongoengine
+goose3
+python-dateutil
+scrapy
+scrapy-rotating-proxies
+celery
+redis
+apscheduler
+python-twitter
+pytrends

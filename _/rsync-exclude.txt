@@ -1,0 +1,14 @@
+.*
+env*
+_/
+__pycache__
+.pyc
+.pyo
+*.log
+*.json
+
+data/mongo/*
+data/*
+logs/*
+results/feeds/*
+results/images/*
