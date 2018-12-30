@@ -7,6 +7,17 @@
 - docker-compose (>= 1.8)
 - MongoDB (optionally)
 
+
+### Credits
+
+- UI is based on code from [SpiderKeeper](https://github.com/DormyMo/SpiderKeeper) project
+
+
+### Screenshot
+
+![Screenshot](_/screenshot_completed_jobs.png)
+
+
 ### Building the docker image
 
 Go to project directory.
